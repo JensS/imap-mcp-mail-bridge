@@ -1,0 +1,16 @@
+{
+  "name": "imap-mcp-mail-bridge",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "npm run --workspaces build",
+    "typecheck": "npm run --workspaces typecheck",
+    "lint": "npm run --workspaces lint",
+    "db:migrate": "npm --workspace @imap-mcp/db run migrate",
+    "dev:server": "npm --workspace @imap-mcp/server run dev",
+    "dev:worker": "npm --workspace @imap-mcp/worker run dev"
+  }
+}
