@@ -1,0 +1,43 @@
+services:
+  server:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.server
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      REDIS_URL: ${REDIS_URL}
+      BASE_URL: ${BASE_URL}
+      OAUTH_ISSUER: ${OAUTH_ISSUER}
+      OAUTH_AUDIENCE: ${OAUTH_AUDIENCE}
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY}
+      RATE_LIMIT_PER_MINUTE: ${RATE_LIMIT_PER_MINUTE:-60}
+      PORT: "3000"
+    healthcheck:
+      test: ["CMD", "wget", "-qO", "-", "http://127.0.0.1:3000/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+    networks:
+      - dokploy-network
+      - dokploy-shared
+
+  worker:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.worker
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      REDIS_URL: ${REDIS_URL}
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY}
+      SYNC_CONCURRENCY: ${SYNC_CONCURRENCY:-4}
+      SYNC_INTERVAL_SECONDS: ${SYNC_INTERVAL_SECONDS:-20}
+    restart: unless-stopped
+    networks:
+      - dokploy-shared
+
+networks:
+  dokploy-network:
+    external: true
+  dokploy-shared:
+    external: true
